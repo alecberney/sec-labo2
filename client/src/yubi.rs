@@ -19,4 +19,14 @@ impl Yubi {
     }
 
     // TODO
+    pub fn generate_keys() -> Result<piv::PublicKeyInfo> {
+        let yubikey = auto_yk()?;
+        piv::generate(yubikey, piv::SlotId::Authentication, piv::ECCP256, Default, Default)
+    }
+
+    /*fn sign_data() -> Result<()> {
+        let yubikey = auto_yk()?;
+        let data = "Hello World!".as_bytes();
+        piv::sign(yubikey, piv::SlotId::Authentication, data)
+    }*/
 }

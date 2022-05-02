@@ -2,6 +2,8 @@ mod authentication;
 mod connection;
 mod action;
 mod yubi;
+mod handlers;
+mod communication_tools;
 
 use read_input::prelude::*;
 use crate::authentication::Authenticate;
