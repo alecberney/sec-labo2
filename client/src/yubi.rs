@@ -1,11 +1,15 @@
 use std::io;
 use std::io::Read;
-use yubikey::*;
+use yubikey::{Context, YubiKey, piv, PinPolicy, TouchPolicy};
+use x509::SubjectPublicKeyInfo;
+
+
+type YubiKeyResult<T> = yubikey::Result<T>;
 
 pub struct Yubi;
 
 impl Yubi {
-    fn auto_yk() -> Result<YubiKey> {
+    fn auto_yk() -> YubiKeyResult<YubiKey> {
         loop {
             for reader in Context::open()?.iter()? {
                 if let Ok(yk) = reader.open() {
@@ -18,20 +22,20 @@ impl Yubi {
         }
     }
 
-    // TODO
-    pub fn generate_keys() -> Result<Vec<u8>> {
+    pub fn generate_keys() -> YubiKeyResult<Vec<u8>> {
         let mut yubikey = Yubi::auto_yk()?;
         Ok(piv::generate(&mut yubikey,
                          piv::SlotId::Authentication,
-                     piv::AlgorithmId::ECCP256,
+                     piv::AlgorithmId::EccP256,
                      PinPolicy::Default,
                  TouchPolicy::Default)
             ?.public_key())
     }
 
-    /*fn sign_data() -> Result<()> {
-        let yubikey = auto_yk()?;
+    //https://docs.rs/yubikey/0.5.0/yubikey/piv/fn.sign_data.html -> to verify
+    /*fn sign_data() -> YubiKeyResult<()> {
+        /*let yubikey = Yubi::auto_yk()?;
         let data = "Hello World!".as_bytes();
-        piv::sign(yubikey, piv::SlotId::Authentication, data)
+        piv::sign(yubikey, piv::SlotId::Authentication, data)*/
     }*/
 }

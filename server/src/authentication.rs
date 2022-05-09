@@ -1,8 +1,11 @@
 use serde::{Serialize, Deserialize};
 use std::error::Error;
+use uuid::Uuid;
+use input_validation::{email_validation::validate_email,
+                       password_validation::validate_password,
+                       uuid_validation::validate_uuid};
+
 use crate::connection::Connection;
-use crate::email_validation::email_validation;
-use crate::password_validation::password_validation;
 
 /// `Authenticate` enum is used to perform:
 /// -   Authentication
@@ -27,17 +30,25 @@ impl Authenticate {
     }
 
     fn register(connection: &mut Connection) -> Result<Option<User>, Box<dyn Error>> {
+        connection.receive()?;
+        // todo add communication tools library
+
+        // Validate datas
+
+        // Send ok message
+
+        // Email semantic validation -> send email
+        // Generate UUID
+        let uuid = Uuid::new_v4();
+
+        // Send email
+        sent_otp_email(&email, &uuid)?;
+
+        // Wait for email token
+        connection.receive()?;
+
+        // Register in db
         Ok(None)
-        // TODO
-        // validate input
-        //connection
-
-        // email semantical validation / send email
-
-        // wait for token
-
-        // register in db
-        //
     }
 
     fn reset_password(connection: &mut Connection) -> Result<Option<User>, Box<dyn Error>> {
@@ -57,9 +68,9 @@ impl Authenticate {
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct User {
     pub email: String,
-    pub hashed_password: String,
     pub salt: String,
-    pub yubikey: String,
+    pub hash_password: String,
+    pub public_yubikey: String,
     pub two_fa: bool
     // TODO
 }
