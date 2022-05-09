@@ -1,4 +1,4 @@
-use lettre::transport::smtp::authentication::Credentials;
+/*use lettre::transport::smtp::authentication::Credentials;
 use lettre::{Message, SmtpTransport, Transport};
 
 const SMTP_USER: &str = "USERNAME";
@@ -26,3 +26,4 @@ pub fn send_otp_mail(dst: &str, otp: &str) -> Result<(), String> {
         Err(e) => Err(format!("Could not send email: {:?}", e)),
     }
 }
+*/

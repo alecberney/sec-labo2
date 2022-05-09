@@ -1,4 +1,4 @@
-//use serde::{Serialize, Deserialize};
+use serde::{Serialize, Deserialize};
 use std::error::Error;
 use strum::IntoEnumIterator;
 use strum_macros::{EnumString, EnumIter};
