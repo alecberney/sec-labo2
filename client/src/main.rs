@@ -4,7 +4,6 @@ mod action;
 mod yubi;
 mod handlers;
 mod communication_tools;
-mod email_manager;
 
 use read_input::prelude::*;
 use crate::authentication::Authenticate;

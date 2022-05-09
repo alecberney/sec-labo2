@@ -10,7 +10,6 @@ use yubikey::*;
 use uuid::Uuid;
 
 //use crate::piv::Key;
-use crate::email_manager;
 use crate::connection::Connection;
 use crate::communication_tools::{RegisterData};
 use crate::handlers::*;
