@@ -14,4 +14,10 @@ yubikey = "0.5"
 input_validation = { path = "../input_validation" }
 rust-argon2 = "1.0"
 rand = "0.8.0"
+uuid = {version = "1.0.0", features = [
+    "v4",                # Lets you generate random UUIDs
+    "fast-rng",          # Use a faster (but still sufficiently random) RNG
+    "macro-diagnostics", # Enable better diagnostics for compile-time UUIDs
+]}
+lettre = "0.9.6"
 

@@ -1,5 +1,7 @@
 use read_input::prelude::*;
-use input_validation::{validate_email, validate_password};
+use input_validation::{email_validation::validate_email,
+                       password_validation::validate_password,
+                       uuid_validation::validate_uuid};
 
 pub fn ask_email() -> String {
     loop {
@@ -15,6 +17,15 @@ pub fn ask_password() -> String {
         let password_input = input::<String>().msg("- Password: ").get();
         if validate_password(&password_input) {
             return password_input;
+        }
+    }
+}
+
+pub fn ask_uuid() -> String {
+    loop {
+        let uuid_input = input::<String>().msg("- Email UUID: ").get();
+        if validate_uuid(&uuid_input) {
+            return uuid_input;
         }
     }
 }

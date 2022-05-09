@@ -19,9 +19,14 @@ impl Yubi {
     }
 
     // TODO
-    pub fn generate_keys() -> Result<piv::PublicKeyInfo> {
-        let yubikey = auto_yk()?;
-        piv::generate(yubikey, piv::SlotId::Authentication, piv::ECCP256, Default, Default)
+    pub fn generate_keys() -> Result<Vec<u8>> {
+        let mut yubikey = Yubi::auto_yk()?;
+        Ok(piv::generate(&mut yubikey,
+                         piv::SlotId::Authentication,
+                     piv::AlgorithmId::ECCP256,
+                     PinPolicy::Default,
+                 TouchPolicy::Default)
+            ?.public_key())
     }
 
     /*fn sign_data() -> Result<()> {

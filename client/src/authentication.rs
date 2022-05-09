@@ -1,19 +1,22 @@
-use serde::{Serialize, Deserialize};
+//use serde::{Serialize, Deserialize};
 use std::error::Error;
 use strum::IntoEnumIterator;
 use strum_macros::{EnumString, EnumIter};
-use sha2::Sha256;
-use hmac::{Hmac, Mac};
+//use sha2::Sha256;
+//use hmac::{Hmac, Mac};
 use argon2::{self, Config};
 use rand::RngCore;
+use yubikey::*;
+use uuid::Uuid;
 
-use crate::piv::Key;
+//use crate::piv::Key;
+use crate::email_manager;
 use crate::connection::Connection;
 use crate::communication_tools::{RegisterData};
 use crate::handlers::*;
 use crate::yubi::Yubi;
 
-type HmacSha256 = Hmac<Sha256>;
+//type HmacSha256 = Hmac<Sha256>;
 
 /// `Authenticate` enum is used to perform:
 /// -   User
@@ -57,17 +60,23 @@ impl Authenticate {
         let email = ask_email();
         let password_input = ask_password();
 
+        // Generate UUID
+        let uuid = Uuid::new_v4();
+
+        // Send email
+        //sent_otp_email(&email, &uuid)?;
+
         // generate salt
         // The salt should be large enough and random : 16 bytes are
         // recommended. / 128 bits
         //let salt = "randomsalt";
         let mut rng = rand::thread_rng();
-        let mut salt = [0u8; 16];
-        rng.fill_bytes(&salt);
+        let mut salt: [u8; 16] = [0; 16];
+        rng.fill_bytes(&mut salt);
 
         // hash password
         //https://docs.rs/rust-argon2/1.0.0/argon2/index.html
-        let password = bytes!(password_input);
+        let password = password_input.as_bytes();
         let config = Config::default();
         let hash_password = argon2::hash_encoded(password, &salt, &config).unwrap();
         //let matches = argon2::verify_encoded(&hash, password).unwrap();
@@ -77,20 +86,21 @@ impl Authenticate {
         //https://docs.rs/yubikey/0.5.0/yubikey/piv/fn.generate.html -> to generate a key
         //https://docs.rs/yubikey/0.5.0/yubikey/piv/fn.sign_data.html -> to verify
 
+        // ask for uuid token given in mail
+        ask_uuid();
+
         connection.send(&RegisterData {
             email,
-            hashed_password,
+            hash_password,
             salt,
-            yubikey }
-        )?;
-
-        // ask for uuid token given in mail
+            yubikey,
+        })?;
 
         Ok(())
     }
 
     fn authenticate(connection: &mut Connection) -> Result<(), Box<dyn Error>> {
-        Ok(()) // TODO
+        // TODO
         // todo validate inputs and send to server
 
         // hashmac prend un hash déjà salé
@@ -103,10 +113,12 @@ impl Authenticate {
 
         //mac.update(b"input message"); // challenge
         //let hashed_password = mac.finalize().into_bytes();
+        Ok(())
     }
 
     fn reset_password(connection: &mut Connection) -> Result<(), Box<dyn Error>> {
-        Ok(()) // TODO
+        // TODO
         // todo validate inputs and send to server
+        Ok(())
     }
 }

@@ -1,18 +1,20 @@
-use yubikey::piv::PublicKeyInfo;
+use serde::{Serialize, Deserialize};
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct RegisterData {
     pub email: String,
-    pub hashed_password: Vec<u8>,
+    pub hash_password: String,
     pub salt: [u8; 16],
-    pub yubikey: PublicKeyInfo,
+    pub yubikey: Vec<u8>,
 }
 
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct LoginData {
     pub email: String,
     pub yubikey: String,
 }
 
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct ResetPasswordData {
     pub email: String,
     pub yubikey: String,
