@@ -11,6 +11,7 @@ lazy_static = "1.4"
 bincode = "1.3"
 lettre = "0.9.6"
 input_validation = { path = "../input_validation" }
+communication_tools = { path = "../communication_tools" }
 uuid = {version = "1.0.0", features = [
     "v4",                # Lets you generate random UUIDs
     "fast-rng",          # Use a faster (but still sufficiently random) RNG

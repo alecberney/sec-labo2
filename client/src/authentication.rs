@@ -7,8 +7,9 @@ use rand::RngCore;
 //use sha2::Sha256;
 //use hmac::{Hmac, Mac};
 
+use communication_tools::data_structures::{RegisterData, EmailConfirmationData, ServerResponse};
+
 use crate::connection::Connection;
-use crate::communication_tools::{RegisterData};
 use crate::handlers::*;
 use crate::yubi::Yubi;
 
@@ -69,18 +70,39 @@ impl Authenticate {
         let hash_password = argon2::hash_encoded(password, &salt, &config).unwrap();
         //let matches = argon2::verify_encoded(&hash, password).unwrap();
 
+        println!("hashed");
+
         let yubikey = Yubi::generate_keys()?;
 
         // Send datas to server
         connection.send(&RegisterData {
             email,
             hash_password,
-            salt,
+            salt: salt.to_vec(),
             yubikey,
         })?;
 
+        let return_message: ServerResponse = connection.receive()?;
+
+        if !return_message.success {
+            println!("{}", return_message.message);
+            // TODO: return error
+        }
+
         // Ask for uuid token given in mail
-        ask_uuid();
+        let email_uuid = ask_uuid();
+
+        // Send email confirmation
+        connection.send(&EmailConfirmationData {
+            uuid: email_uuid,
+        })?;
+
+        let return_message2: ServerResponse = connection.receive()?;
+
+        if !return_message2.success {
+            println!("{}", return_message2.message);
+            // TODO: return error
+        }
 
         Ok(())
     }

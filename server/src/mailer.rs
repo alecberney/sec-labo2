@@ -29,5 +29,4 @@ pub fn send_otp_mail(dst: &str, otp: &str) -> Result<(), String> {
         Ok(_) => Ok(()),
         Err(e) => Err(format!("Could not send email: {:?}", e)),
     }
-}
-*/
+}*/

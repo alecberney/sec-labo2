@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CargoProjects">
+    <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="d40c392f-6983-4cf3-b241-4348b0c63ef7" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/communication_tools.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Cargo.toml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/data_structures.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/lib.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/messages.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../client/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/../client/Cargo.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../client/src/authentication.rs" beforeDir="false" afterPath="$PROJECT_DIR$/../client/src/authentication.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../client/src/communication_tools.rs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../client/src/main.rs" beforeDir="false" afterPath="$PROJECT_DIR$/../client/src/main.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/../server/Cargo.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server/src/authentication.rs" beforeDir="false" afterPath="$PROJECT_DIR$/../server/src/authentication.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server/src/mailer.rs" beforeDir="false" afterPath="$PROJECT_DIR$/../server/src/mailer.rs" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Rust File" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="MacroExpansionManager">
+    <option name="directoryName" value="o5ry32jj" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHome" value="C:\Program Files\JetBrains\IntelliJ IDEA 2020.2.2\plugins\maven\lib\maven3" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectId" id="29FhpUeAQUHny6ZCpjVjT6OkjNW" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "last_opened_file_path": "A:/HEIG/Semestre 6/SEC/Labos/sec-labo2/input_validation",
+    "org.rust.cargo.project.model.PROJECT_DISCOVERY": "true"
+  }
+}]]></component>
+  <component name="RustProjectSettings">
+    <option name="toolchainHomeDirectory" value="$USER_HOME$/.cargo/bin" />
+    <option name="version" value="2" />
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="d40c392f-6983-4cf3-b241-4348b0c63ef7" name="Changes" comment="" />
+      <created>1652714923265</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1652714923265</updated>
+      <workItem from="1652714924474" duration="490000" />
+      <workItem from="1652774775104" duration="63000" />
+      <workItem from="1652774924875" duration="2594000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>
