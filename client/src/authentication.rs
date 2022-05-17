@@ -82,6 +82,8 @@ impl Authenticate {
             yubikey,
         })?;
 
+        println!("data sent");
+
         let return_message: ServerResponse = connection.receive()?;
 
         if !return_message.success {

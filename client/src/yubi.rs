@@ -1,6 +1,6 @@
 use std::io;
 use std::io::Read;
-use yubikey::{Context, YubiKey, piv, PinPolicy, TouchPolicy};
+use yubikey::{Context, YubiKey, piv, PinPolicy, TouchPolicy, MgmKey};
 use x509::SubjectPublicKeyInfo;
 
 
@@ -24,6 +24,7 @@ impl Yubi {
 
     pub fn generate_keys() -> YubiKeyResult<Vec<u8>> {
         let mut yubikey = Yubi::auto_yk()?;
+        yubikey.authenticate(MgmKey::default())?;
         Ok(piv::generate(&mut yubikey,
                          piv::SlotId::Authentication,
                      piv::AlgorithmId::EccP256,
@@ -34,7 +35,8 @@ impl Yubi {
 
     //https://docs.rs/yubikey/0.5.0/yubikey/piv/fn.sign_data.html -> to verify
     /*fn sign_data() -> YubiKeyResult<()> {
-        /*let yubikey = Yubi::auto_yk()?;
+        /*yubikey.authenticate(MgmKey::default())?;
+        let yubikey = Yubi::auto_yk()?;
         let data = "Hello World!".as_bytes();
         piv::sign(yubikey, piv::SlotId::Authentication, data)*/
     }*/
