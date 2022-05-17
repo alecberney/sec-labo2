@@ -13,7 +13,6 @@ strum_macros = "0.20"
 yubikey = "0.5"
 input_validation = { path = "../input_validation" }
 communication_tools = { path = "../communication_tools" }
-rust-argon2 = "1.0"
-rand = "0.8.0"
+hashing_tools = { path = "../hashing_tools" }
 x509 = "0.2.0"
 

@@ -2,18 +2,13 @@ use serde::{Serialize, Deserialize};
 use std::error::Error;
 use strum::IntoEnumIterator;
 use strum_macros::{EnumString, EnumIter};
-use argon2::{self, Config};
-use rand::RngCore;
-//use sha2::Sha256;
-//use hmac::{Hmac, Mac};
 
-use communication_tools::data_structures::{RegisterData, EmailConfirmationData, ServerResponse};
+use communication_tools::data_structures::*;
+use hashing_tools::hash_helpers::{hash_argon2, hashmac_sha256};
 
 use crate::connection::Connection;
 use crate::handlers::*;
 use crate::yubi::Yubi;
-
-//type HmacSha256 = Hmac<Sha256>;
 
 /// `Authenticate` enum is used to perform:
 /// -   User
@@ -55,74 +50,71 @@ impl Authenticate {
 
         let email = ask_email();
         let password_input = ask_password();
-
-        // Generate salt of 16 bytes / 128 bits
-        let mut rng = rand::thread_rng();
-        let mut salt: [u8; 16] = [0; 16];
-        rng.fill_bytes(&mut salt);
-
-        // for salt perhaps: https://docs.rs/argon2/latest/argon2/
-
-        // Hash password
-        //https://docs.rs/rust-argon2/1.0.0/argon2/index.html
-        let password = password_input.as_bytes();
-        let config = Config::default();
-        let hash_password = argon2::hash_encoded(password, &salt, &config).unwrap();
-        //let matches = argon2::verify_encoded(&hash, password).unwrap();
-
-        println!("hashed");
-
-        let yubikey = Yubi::generate_keys()?;
+        let public_yubikey = Yubi::generate_keys()?;
 
         // Send datas to server
         connection.send(&RegisterData {
             email,
-            hash_password,
-            salt: salt.to_vec(),
-            yubikey,
+            password: password_input,
+            public_yubikey,
         })?;
 
         println!("data sent");
 
         let return_message: ServerResponse = connection.receive()?;
-
         if !return_message.success {
             println!("{}", return_message.message);
             // TODO: return error
+            return Err(Box::new(()));
         }
 
         // Ask for uuid token given in mail
         let email_uuid = ask_uuid();
 
-        // Send email confirmation
+        // Send email uuid confirmation value
         connection.send(&EmailConfirmationData {
             uuid: email_uuid,
         })?;
 
         let return_message2: ServerResponse = connection.receive()?;
-
         if !return_message2.success {
             println!("{}", return_message2.message);
             // TODO: return error
+            return Err(Box::new(()));
         }
 
         Ok(())
     }
 
     fn authenticate(connection: &mut Connection) -> Result<(), Box<dyn Error>> {
-        // TODO
-        // todo validate inputs and send to server
+        println!("<< Please authenticate yourself >>");
 
-        // hashmac prend un hash déjà salé
-        //https://docs.rs/hmac/0.12.1/hmac/index.html
+        let email = ask_email();
+        let password_input = ask_password();
 
-        // faire dans tous les cas le hashmap même si user inconnu
-        // le secret c'est le mdp hashé parce que clé dérivée // argon 2
-        //let mut mac = HmacSha256::new_from_slice(b"my secret and secure key")?;
+        // Send datas to server
+        connection.send(&LoginData {
+            email,
+        })?;
 
+        // Receive challenge
+        let challenge: ChallengeData = connection.receive()?;
 
-        //mac.update(b"input message"); // challenge
-        //let hashed_password = mac.finalize().into_bytes();
+        // Creating the response with challenge
+        let hash_password = hash_argon2(&password_input, &mut challenge.salt.as_array());
+        let response;
+
+        match hashmac_sha256(&challenge.challenge, &hash_password) {
+            Ok(response_hash) => response = response_hash,
+            Err(error) => {
+                println!(error);
+                return Err(Box::new(()));
+            },
+        }
+
+        // Second factor authentification
+        //let yubi_buffer = Yubi::sign(&secret)?;
+
         Ok(())
     }
 

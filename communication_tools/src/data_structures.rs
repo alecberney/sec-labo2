@@ -3,9 +3,8 @@ use serde::{Serialize, Deserialize};
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct RegisterData {
     pub email: String,
-    pub hash_password: String,
-    pub salt: Vec<u8>,
-    pub yubikey: Vec<u8>,
+    pub password: String,
+    pub public_yubikey: Vec<u8>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
@@ -16,7 +15,22 @@ pub struct EmailConfirmationData {
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct LoginData {
     pub email: String,
-    pub yubikey: Vec<u8>,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct ChallengeData {
+    pub challenge: [u8; 16],
+    pub salt: [u8; 16],
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct ResponseData {
+    pub response: [u8; 16],
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct SecondFactorData {
+    pub challenge: String,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug)]

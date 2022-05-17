@@ -4,19 +4,19 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d40c392f-6983-4cf3-b241-4348b0c63ef7" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/../hashing_tools/.idea/hashing_tools.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../hashing_tools/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../hashing_tools/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../hashing_tools/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../hashing_tools/Cargo.toml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../hashing_tools/src/hash_helpers.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../hashing_tools/src/lib.rs" afterDir="false" />
+    <list default="true" id="1525c026-6629-4569-9bdd-977792e2e874" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/hashing_tools.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Cargo.toml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/hash_helpers.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/lib.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../client/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/../client/Cargo.toml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../client/src/authentication.rs" beforeDir="false" afterPath="$PROJECT_DIR$/../client/src/authentication.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../client/src/yubi.rs" beforeDir="false" afterPath="$PROJECT_DIR$/../client/src/yubi.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/data_structures.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/data_structures.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../communication_tools/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../communication_tools/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../communication_tools/src/data_structures.rs" beforeDir="false" afterPath="$PROJECT_DIR$/../communication_tools/src/data_structures.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../server/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/../server/Cargo.toml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../server/src/authentication.rs" beforeDir="false" afterPath="$PROJECT_DIR$/../server/src/authentication.rs" afterDir="false" />
     </list>
@@ -36,7 +36,7 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
   <component name="MacroExpansionManager">
-    <option name="directoryName" value="o5ry32jj" />
+    <option name="directoryName" value="qba1qjla" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -48,25 +48,24 @@
       </MavenGeneralSettings>
     </option>
   </component>
-  <component name="ProjectId" id="29FhpUeAQUHny6ZCpjVjT6OkjNW" />
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
-    <ConfirmationsSetting value="2" id="Add" />
-  </component>
+  <component name="ProjectId" id="29IExiVqjHhNbwLXIFUuRjSp11g" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_ADD_EXTERNAL_FILES": "true",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "last_opened_file_path": "A:/HEIG/Semestre 6/SEC/Labos/sec-labo2/hashing_tools",
-    "nodejs_package_manager_path": "npm",
-    "org.rust.cargo.project.model.PROJECT_DISCOVERY": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;last_opened_file_path&quot;: &quot;A:/HEIG/Semestre 6/SEC/Labos/sec-labo2/hashing_tools&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;org.rust.cargo.project.model.PROJECT_DISCOVERY&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RustProjectSettings">
     <option name="toolchainHomeDirectory" value="$USER_HOME$/.cargo/bin" />
     <option name="version" value="2" />
@@ -74,15 +73,14 @@
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="d40c392f-6983-4cf3-b241-4348b0c63ef7" name="Changes" comment="" />
-      <created>1652714923265</created>
+      <changelist id="1525c026-6629-4569-9bdd-977792e2e874" name="Changes" comment="" />
+      <created>1652792447364</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1652714923265</updated>
-      <workItem from="1652714924474" duration="490000" />
-      <workItem from="1652774775104" duration="63000" />
-      <workItem from="1652774924875" duration="2594000" />
-      <workItem from="1652788725785" duration="6475000" />
+      <updated>1652792447364</updated>
+      <workItem from="1652792448922" duration="4397000" />
+      <workItem from="1652798414340" duration="98000" />
+      <workItem from="1652799281978" duration="83000" />
     </task>
     <servers />
   </component>
@@ -99,8 +97,5 @@
         </entry>
       </map>
     </option>
-  </component>
-  <component name="VcsManagerConfiguration">
-    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
   </component>
 </project>
