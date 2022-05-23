@@ -1,5 +1,8 @@
 # SEC Labo 2
 
+Challenge - response:
+![image](https://user-images.githubusercontent.com/61196626/168842601-dfb83c8d-6fea-4483-a19c-ad6304b32b81.png)
+
 ### 1. What are the advantages of a challenge-response authentication compared to a weak authentication protocol?
 
 ### 2. In your application, when do you require the user to input its Yubikey? Justify.
