@@ -63,9 +63,7 @@ impl Authenticate {
 
         let return_message: ServerResponse = connection.receive()?;
         if !return_message.success {
-            println!("{}", return_message.message);
-            // TODO: return error
-            return Err(Box::new(()));
+            return Err(format!("{}", return_message.message).into());
         }
 
         // Ask for uuid token given in mail
@@ -78,9 +76,7 @@ impl Authenticate {
 
         let return_message2: ServerResponse = connection.receive()?;
         if !return_message2.success {
-            println!("{}", return_message2.message);
-            // TODO: return error
-            return Err(Box::new(()));
+            return Err(format!("{}", return_message2.message).into());
         }
 
         Ok(())
@@ -98,18 +94,25 @@ impl Authenticate {
         })?;
 
         // Receive challenge
-        let challenge: ChallengeData = connection.receive()?;
+        let mut challenge: ChallengeData = connection.receive()?;
 
         // Creating the response with challenge
-        let hash_password = hash_argon2(&password_input, &mut challenge.salt.as_array());
-        let response;
-
+        let hash_password = hash_argon2(&password_input, &mut challenge.salt);
         match hashmac_sha256(&challenge.challenge, &hash_password) {
-            Ok(response_hash) => response = response_hash,
-            Err(error) => {
-                println!(error);
-                return Err(Box::new(()));
+            Ok(response_hash) => {
+                // Send response datas to server
+                connection.send(&ResponseData {
+                    response: response_hash,
+                })?;
             },
+            Err(error) => {
+                return Err(error.into());
+            },
+        }
+
+        let serveur_response :ServerResponse = connection.receive()?;
+        if !serveur_response.success {
+            return Err(format!("{}", serveur_response.message).into());
         }
 
         // Second factor authentification
