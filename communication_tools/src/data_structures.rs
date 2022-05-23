@@ -25,7 +25,7 @@ pub struct ChallengeData {
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct ResponseData {
-    pub response: [u8; 16],
+    pub response: Vec<u8>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug)]

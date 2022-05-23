@@ -5,19 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1525c026-6629-4569-9bdd-977792e2e874" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/hashing_tools.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Cargo.toml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/hash_helpers.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/lib.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../client/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/../client/Cargo.toml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../client/src/authentication.rs" beforeDir="false" afterPath="$PROJECT_DIR$/../client/src/authentication.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../client/src/yubi.rs" beforeDir="false" afterPath="$PROJECT_DIR$/../client/src/yubi.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../communication_tools/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../communication_tools/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../communication_tools/src/data_structures.rs" beforeDir="false" afterPath="$PROJECT_DIR$/../communication_tools/src/data_structures.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/../server/Cargo.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../communication_tools/src/messages.rs" beforeDir="false" afterPath="$PROJECT_DIR$/../communication_tools/src/messages.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/hash_helpers.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/hash_helpers.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../server/src/authentication.rs" beforeDir="false" afterPath="$PROJECT_DIR$/../server/src/authentication.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -80,7 +73,9 @@
       <updated>1652792447364</updated>
       <workItem from="1652792448922" duration="4397000" />
       <workItem from="1652798414340" duration="98000" />
-      <workItem from="1652799281978" duration="83000" />
+      <workItem from="1652799281978" duration="135000" />
+      <workItem from="1653290315556" duration="1184000" />
+      <workItem from="1653293025836" duration="258000" />
     </task>
     <servers />
   </component>

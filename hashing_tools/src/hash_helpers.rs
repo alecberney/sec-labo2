@@ -12,12 +12,12 @@ pub fn generate_random_16_bytes(bytes: &mut [u8; 16]) {
 
 // for salt perhaps: https://docs.rs/argon2/latest/argon2/
 //https://docs.rs/rust-argon2/1.0.0/argon2/index.html
-pub fn hash_argon2(input: &str, salt: &[u8; 16]) -> String {
+pub fn hash_argon2(input: &str, salt: &[u8]) -> String { //salt: &[u8; 16]
     // TODO: remove unwrap and send Error
     argon2::hash_encoded(input.as_bytes(), salt, &Config::default()).unwrap()
 }
 
-pub fn hashmac_sha256(input: &[u8; 16], secret_key: &str) -> Result<[u8; 16], String> {
+pub fn hashmac_sha256(input: &[u8; 16], secret_key: &str) -> Result<Vec<u8>, String> {
     // hashmac prend un hash déjà salé
     //https://docs.rs/hmac/0.12.1/hmac/index.html
 
@@ -31,6 +31,5 @@ pub fn hashmac_sha256(input: &[u8; 16], secret_key: &str) -> Result<[u8; 16], St
     };
     mac.update(input);
 
-    // TODO
-    Ok(mac.finalize().into_bytes()[..])
+    Ok(mac.finalize().into_bytes()[..].to_vec())
 }

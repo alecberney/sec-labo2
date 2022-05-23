@@ -3,6 +3,7 @@ use std::error::Error;
 use uuid::Uuid;
 
 use communication_tools::data_structures::*;
+use communication_tools::messages::*;
 use hashing_tools::hash_helpers::*;
 use input_validation::{email_validation::validate_email,
                        uuid_validation::validate_uuid,
@@ -43,13 +44,13 @@ impl Authenticate {
         if !validate_email(&register_data.email) ||
             !validate_password(&register_data.password) {
             connection.send(&ServerResponse{
-                message: String::from("Invalid email"),
+                message: String::from(INVALID_EMAIL),
                 success: false,
             })?;
-            //return Err("Invalid email");
+            return Err(INVALID_EMAIL.into());
         } else {
             connection.send(&ServerResponse{
-                message: String::from("Email sent"),
+                message: String::from(EMAIL_SENT),
                 success: true,
             })?;
         }
@@ -76,14 +77,15 @@ impl Authenticate {
         // Send result message
         if !validate_uuid(&confirmation_data.uuid) || uuid_string != confirmation_data.uuid {
             connection.send(&ServerResponse{
-                message: String::from("Bad uuid"),
+                message: String::from(BAD_UUID),
                 success: false,
             })?;
         } else {
             connection.send(&ServerResponse{
-                message: String::from("Account registered"),
+                message: String::from(ACCOUNT_REGISTERED),
                 success: true,
             })?;
+            return Err(BAD_UUID.into());
         }
 
         // Register in db
@@ -102,15 +104,19 @@ impl Authenticate {
     fn authenticate(connection: &mut Connection) -> Result<Option<User>, Box<dyn Error>> {
         let login_data :LoginData = connection.receive()?;
 
+        // Default user
         let mut user = User {
-            email: "".to_string(),
+            email: "default@default.default".to_string(),
             salt: [0; 16],
-            hash_password: "".to_string(),
+            hash_password: "default".to_string(),
             public_yubikey: vec![],
             two_fa: false
         };
         let mut user_salt: [u8; 16] = [0; 16];
         let mut valid_user = false;
+
+        // We always do all the process of checking even if there is no user
+        // because we always want the same time of reponse
 
         if validate_email(&login_data.email) {
             match Database::get(&login_data.email)? {
@@ -138,14 +144,17 @@ impl Authenticate {
         match hashmac_sha256(&challenge, &user.hash_password) {
             Ok(response_hash) => response = response_hash,
             Err(error) => {
-                println!("{}", error);
-                //return Err(Box::new(error("")));
+                return Err(format!("{}", error).into());
             },
         }
 
         let response_data :ResponseData = connection.receive()?;
 
         if response_data.response != response || !valid_user {
+            connection.send(&ServerResponse{
+                message: AUTH_FAIL.to_string(),
+                success: false
+            })?;
             return Ok(None)
         }
         
