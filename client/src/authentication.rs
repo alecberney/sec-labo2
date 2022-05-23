@@ -59,8 +59,6 @@ impl Authenticate {
             public_yubikey,
         })?;
 
-        println!("data sent");
-
         let return_message: ServerResponse = connection.receive()?;
         if !return_message.success {
             return Err(format!("{}", return_message.message).into());

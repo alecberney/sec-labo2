@@ -11,8 +11,7 @@ use input_validation::{email_validation::validate_email,
 
 use crate::connection::Connection;
 use crate::database::Database;
-
-//use crate::mailer::send_otp_mail;
+use crate::mailer::send_mail;
 
 /// `Authenticate` enum is used to perform:
 /// -   Authentication
@@ -69,7 +68,9 @@ impl Authenticate {
         let uuid_string = uuid.as_hyphenated().to_string();
 
         // Send email
-        //sent_otp_email(&register_data.email, &uuid_string)?;
+        let message = format!("Here is the validation token : {}", uuid_string);
+        let subject = "Mail validation token";
+        send_mail(&register_data.email, subject, &message)?;
 
         // Wait for email token
         let confirmation_data :EmailConfirmationData = connection.receive()?;
