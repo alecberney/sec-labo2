@@ -3,6 +3,7 @@ mod connection;
 mod database;
 mod action;
 mod mailer;
+mod authentication_tools;
 
 #[macro_use]
 extern crate lazy_static;

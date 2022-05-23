@@ -1,5 +1,7 @@
 use read_input::prelude::*;
-use communication_tools::messages::*;
+use communication_tools::messages::{INVALID_EMAIL,
+                                    INVALID_PASSWORD,
+                                    INVALID_UUID};
 use input_validation::{email_validation::validate_email,
                        password_validation::validate_password,
                        uuid_validation::validate_uuid};
@@ -10,7 +12,7 @@ pub fn ask_email() -> String {
         if validate_email(&email_input) {
             return email_input;
         }
-        println!(INVALID_EMAIL);
+        println!("{}", INVALID_EMAIL);
     }
 }
 
@@ -20,7 +22,7 @@ pub fn ask_password() -> String {
         if validate_password(&password_input) {
             return password_input;
         }
-        println!(INVALID_PASSWORD);
+        println!("{}", INVALID_PASSWORD.to_string());
     }
 }
 
@@ -30,6 +32,6 @@ pub fn ask_uuid() -> String {
         if validate_uuid(&uuid_input) {
             return uuid_input;
         }
-        println!(INVALID_UUID);
+        println!("{}", INVALID_UUID.to_string());
     }
 }

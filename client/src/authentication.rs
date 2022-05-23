@@ -59,19 +59,18 @@ impl Authenticate {
             public_yubikey,
         })?;
 
+        // Handle server response
         let return_message: ServerResponse = connection.receive()?;
         if !return_message.success {
             return Err(format!("{}", return_message.message).into());
         }
 
-        // Ask for uuid token given in mail
-        let email_uuid = ask_uuid();
-
         // Send email uuid confirmation value
         connection.send(&EmailConfirmationData {
-            uuid: email_uuid,
+            uuid: ask_uuid(),
         })?;
 
+        // Handle server response
         let return_message2: ServerResponse = connection.receive()?;
         if !return_message2.success {
             return Err(format!("{}", return_message2.message).into());
@@ -83,13 +82,12 @@ impl Authenticate {
     fn authenticate(connection: &mut Connection) -> Result<(), Box<dyn Error>> {
         println!("<< Please authenticate yourself >>");
 
-        let email = ask_email();
-        let password_input = ask_password();
-
         // Send datas to server
         connection.send(&LoginData {
-            email,
+            email: ask_email(),
         })?;
+
+        let password_input = ask_password();
 
         // Receive challenge
         let mut challenge: ChallengeData = connection.receive()?;
@@ -108,6 +106,7 @@ impl Authenticate {
             },
         }
 
+        // Handle server response
         let serveur_response :ServerResponse = connection.receive()?;
         if !serveur_response.success {
             return Err(format!("{}", serveur_response.message).into());
@@ -116,12 +115,44 @@ impl Authenticate {
         // Second factor authentification
         //let yubi_buffer = Yubi::sign(&secret)?;
 
+        // TODO: ask_pin()
+
         Ok(())
     }
 
     fn reset_password(connection: &mut Connection) -> Result<(), Box<dyn Error>> {
-        // TODO
-        // todo validate inputs and send to server
+        println!("<< Reset password >>");
+
+        // TODO: demander si on doit quand même s'identifier avec la clé avant?
+
+        // TODO: problème impossible de faire 2 actions à la suite
+
+        // Send email to server
+        connection.send(&ResetPasswordStep1Data {
+            email: ask_email(),
+        })?;
+
+        let return_message: ServerResponse = connection.receive()?;
+        if !return_message.success {
+            return Err(format!("{}", return_message.message).into());
+        }
+
+        // Send email with uuid confirmation value
+        connection.send(&ResetPasswordStep2Data {
+            uuid: ask_uuid(),
+        })?;
+
+        // Handle server response
+        let return_message2: ServerResponse = connection.receive()?;
+        if !return_message2.success {
+            return Err(format!("{}", return_message2.message).into());
+        }
+
+        // Send new password
+        connection.send(&ResetPasswordStep3Data {
+            password: ask_password(),
+        })?;
+
         Ok(())
     }
 }

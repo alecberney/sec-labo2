@@ -1,5 +1,6 @@
 use serde::{Serialize, Deserialize};
 
+// Register
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct RegisterData {
     pub email: String,
@@ -12,6 +13,7 @@ pub struct EmailConfirmationData {
     pub uuid: String,
 }
 
+// Login
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct LoginData {
     pub email: String,
@@ -33,12 +35,23 @@ pub struct SecondFactorData {
     pub challenge: String,
 }
 
+// Reset password
 #[derive(Serialize, Deserialize, Clone, Debug)]
-pub struct ResetPasswordData {
+pub struct ResetPasswordStep1Data {
     pub email: String,
-    pub yubikey: Vec<u8>,
 }
 
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct ResetPasswordStep2Data {
+    pub uuid: String,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct ResetPasswordStep3Data {
+    pub password: String,
+}
+
+// Other
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct ServerResponse {
     pub message: String,

@@ -17,3 +17,5 @@ pub static AUTH_FAIL: &str = "Invalid user and password combination";
 pub static EMAIL_SENT: &str = "Email sent";
 #[warn(dead_code)]
 pub static ACCOUNT_REGISTERED: &str = "Account registered";
+#[warn(dead_code)]
+pub static CORRECT_UUID: &str = "Correct UUID from email";

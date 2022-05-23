@@ -1,17 +1,14 @@
 use serde::{Serialize, Deserialize};
 use std::error::Error;
-use uuid::Uuid;
 
 use communication_tools::data_structures::*;
 use communication_tools::messages::*;
 use hashing_tools::hash_helpers::*;
-use input_validation::{email_validation::validate_email,
-                       uuid_validation::validate_uuid,
-                       password_validation::validate_password};
+use input_validation::{email_validation::validate_email, password_validation::validate_password};
 
 use crate::connection::Connection;
 use crate::database::Database;
-use crate::mailer::send_mail;
+use crate::authentication_tools::{hash_password, send_token_email, validate_email_uuid};
 
 /// `Authenticate` enum is used to perform:
 /// -   Authentication
@@ -36,17 +33,25 @@ impl Authenticate {
     }
 
     fn register(connection: &mut Connection) -> Result<Option<User>, Box<dyn Error>> {
-        let register_data:RegisterData = connection.receive()?;
-
         // Validate data
+        let register_data:RegisterData = connection.receive()?;
+        let mut error_message = "";
+
         // TODO: verify public yubikey if possible
-        if !validate_email(&register_data.email) ||
-            !validate_password(&register_data.password) {
+        if !validate_email(&register_data.email) {
+            error_message = INVALID_EMAIL;
+        }
+
+        if !validate_password(&register_data.password) {
+            error_message = INVALID_PASSWORD;
+        }
+
+        if error_message != "" {
             connection.send(&ServerResponse{
-                message: String::from(INVALID_EMAIL),
+                message: String::from(error_message),
                 success: false,
             })?;
-            return Err(INVALID_EMAIL.into());
+            return Err(error_message.into());
         } else {
             connection.send(&ServerResponse{
                 message: String::from(EMAIL_SENT),
@@ -54,40 +59,22 @@ impl Authenticate {
             })?;
         }
 
-        // Generate salt
-        let mut salt: [u8; 16] = [0; 16];
-        generate_random_16_bytes(&mut salt);
-
-        // Hash password
-        let hash_password = hash_argon2(&register_data.password, &mut salt);
-
-        // Email semantic validation -> send email
-        // Generate UUID
-        // TODO: in a function
-        let uuid = Uuid::new_v4();
-        let uuid_string = uuid.as_hyphenated().to_string();
-
-        // Send email
-        let message = format!("Here is the validation token : {}", uuid_string);
-        let subject = "Mail validation token";
-        send_mail(&register_data.email, subject, &message)?;
+        // Send email for semantic validation
+        let uuid = send_token_email(&register_data.email,
+                              "Mail validation token",
+                              "Here is the validation token")?;
 
         // Wait for email token
         let confirmation_data :EmailConfirmationData = connection.receive()?;
 
         // Send result message
-        if !validate_uuid(&confirmation_data.uuid) || uuid_string != confirmation_data.uuid {
-            connection.send(&ServerResponse{
-                message: String::from(BAD_UUID),
-                success: false,
-            })?;
-        } else {
-            connection.send(&ServerResponse{
-                message: String::from(ACCOUNT_REGISTERED),
-                success: true,
-            })?;
-            return Err(BAD_UUID.into());
-        }
+        validate_email_uuid(connection,
+                            &uuid,
+                            &confirmation_data.uuid,
+                            ACCOUNT_REGISTERED)?;
+
+        // Hash password for DB
+        let (salt, hash_password) = hash_password(&register_data.password);
 
         // Register in db
         let user = User {
@@ -158,6 +145,8 @@ impl Authenticate {
             })?;
             return Ok(None)
         }
+
+        // TODO 2fa
         
         Ok(Some(user))
 
@@ -168,7 +157,65 @@ impl Authenticate {
     }
 
     fn reset_password(connection: &mut Connection) -> Result<Option<User>, Box<dyn Error>> {
-        Ok(None) // TODO
+        // Validate email
+        let reset_step1_data :ResetPasswordStep1Data = connection.receive()?;
+        let mut valid_email = false;
+        let mut reset_user = None;
+
+        if validate_email(&reset_step1_data.email) {
+            reset_user = Database::get(&reset_step1_data.email)?;
+            if let Some(_) = reset_user {
+                valid_email = true;
+            }
+        }
+
+        if valid_email {
+            connection.send(&ServerResponse{
+                message: String::from(EMAIL_SENT),
+                success: true,
+            })?;
+        } else {
+            connection.send(&ServerResponse{
+                message: String::from(INVALID_EMAIL),
+                success: false,
+            })?;
+            return Err(INVALID_EMAIL.into());
+        }
+
+        // Send reset email
+        let uuid = send_token_email(&reset_step1_data.email,
+                                    "Reset password mail",
+                                    "Here is the reset password token : ")?;
+
+        let reset_step2_data :ResetPasswordStep2Data = connection.receive()?;
+
+        // Send result message
+        validate_email_uuid(connection,
+                            &uuid,
+                            &reset_step2_data.uuid,
+                            CORRECT_UUID)?;
+
+        let reset_step3_data :ResetPasswordStep3Data = connection.receive()?;
+
+        if !validate_password(&reset_step3_data.password) {
+            connection.send(&ServerResponse{
+                message: String::from(INVALID_PASSWORD),
+                success: false,
+            })?;
+        } else {
+            // Update in db
+            let (salt, hash_password) = hash_password(&reset_step3_data.password);
+            match reset_user {
+                Some(mut user_db) => {
+                    user_db.hash_password = hash_password;
+                    user_db.salt = salt;
+                    Database::insert(&user_db)?;
+                },
+                None => return Err(INVALID_EMAIL.into()),
+            }
+        }
+
+        Ok(None)
     }
 }
 

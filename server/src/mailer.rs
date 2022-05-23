@@ -2,7 +2,7 @@ use lettre::transport::smtp::authentication::Credentials;
 use lettre::{Message, SmtpTransport, Transport};
 
 const SMTP_USER: &str = "alecberney";
-const SMTP_PASS: &str = "insert_password";
+const SMTP_PASS: &str = "dhzksgixhpdmjrce";
 const SMTP_SERV: &str = "smtp.gmail.com";
 const MAIL_FROM: &str = "AlecBerney <alecberney@gmail.com>";
 
