@@ -1,10 +1,12 @@
 use uuid::Uuid;
 use std::error::Error;
+use p256::ecdsa::VerifyingKey;
 
 use hashing_tools::hash_helpers::*;
 use communication_tools::data_structures::ServerResponse;
 use input_validation::uuid_validation::validate_uuid;
 use communication_tools::messages::BAD_UUID;
+
 
 use crate::connection::Connection;
 use crate::mailer::send_mail;
@@ -37,12 +39,19 @@ pub fn validate_email_uuid(connection: &mut Connection,
             message: String::from(BAD_UUID),
             success: false,
         })?;
+        return Err(BAD_UUID.into());
     } else {
         connection.send(&ServerResponse{
             message: String::from(success_message),
             success: true,
         })?;
-        return Err(BAD_UUID.into());
     }
     Ok(())
+}
+
+pub fn validate_public_key(public_key: &Vec<u8>) -> bool {
+    return match VerifyingKey::from_sec1_bytes(public_key) {
+        Ok(_) => true,
+        Err(_) => false
+    }
 }

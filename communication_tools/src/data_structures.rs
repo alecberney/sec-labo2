@@ -32,7 +32,7 @@ pub struct ResponseData {
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct SecondFactorData {
-    pub challenge: String,
+    pub response: Vec<u8>,
 }
 
 // Reset password
@@ -56,4 +56,11 @@ pub struct ResetPasswordStep3Data {
 pub struct ServerResponse {
     pub message: String,
     pub success: bool,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct ServerResponseTwoFA {
+    pub message: String,
+    pub success: bool,
+    pub two_fa: bool,
 }

@@ -4,7 +4,7 @@ use strum::IntoEnumIterator;
 use strum_macros::{EnumString, EnumIter};
 
 use communication_tools::data_structures::*;
-use hashing_tools::hash_helpers::{hash_argon2, hashmac_sha256};
+use hashing_tools::hash_helpers::{hash_argon2, hash_sha256, hashmac_sha256};
 
 use crate::connection::Connection;
 use crate::handlers::*;
@@ -107,15 +107,26 @@ impl Authenticate {
         }
 
         // Handle server response
-        let serveur_response :ServerResponse = connection.receive()?;
+        let serveur_response :ServerResponseTwoFA = connection.receive()?;
         if !serveur_response.success {
             return Err(format!("{}", serveur_response.message).into());
+        } else if !serveur_response.two_fa {
+            return Ok(());
         }
 
         // Second factor authentification
-        //let yubi_buffer = Yubi::sign(&secret)?;
+        // We use same challenge than before (for the hmac part)
+        let challenge_hashed = hash_sha256(&challenge.challenge);
+        let yubi_buffer = Yubi::sign(&challenge_hashed)?;
 
-        // TODO: ask_pin()
+        connection.send(&SecondFactorData {
+            response: yubi_buffer.to_vec()
+        })?;
+
+        let challenge_result :ServerResponse = connection.receive()?;
+        if !challenge_result.success {
+            return Err(format!("{}", challenge_result.message).into());
+        }
 
         Ok(())
     }
@@ -123,9 +134,7 @@ impl Authenticate {
     fn reset_password(connection: &mut Connection) -> Result<(), Box<dyn Error>> {
         println!("<< Reset password >>");
 
-        // TODO: demander si on doit quand même s'identifier avec la clé avant?
-
-        // TODO: problème impossible de faire 2 actions à la suite
+        // TODO: faire auth yubikey via challenge response après avoir valider l'email
 
         // Send email to server
         connection.send(&ResetPasswordStep1Data {

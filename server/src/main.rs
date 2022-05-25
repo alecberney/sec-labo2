@@ -18,7 +18,10 @@ fn handle_client(mut connection: Connection) {
     loop {
         match Authenticate::perform(&mut connection) {
             Ok(Some(mut user)) => while let Ok(true) = Action::perform(&mut user, &mut connection) {},
-            Err(_) => return,
+            Err(error) => {
+                println!("{}", error);
+                return
+            },
             _ => {}
         }
     }

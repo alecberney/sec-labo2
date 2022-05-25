@@ -1,9 +1,8 @@
 use serde::{Serialize, Deserialize};
-use crate::connection::Connection;
 use std::error::Error;
-
 use strum::IntoEnumIterator;
 use strum_macros::{EnumString, EnumIter};
+use crate::connection::Connection;
 
 /// `Action` enum is used to perform logged operations:
 /// -   Enable/Disable 2fa authentication

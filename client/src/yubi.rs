@@ -24,25 +24,18 @@ impl Yubi {
 
     pub fn generate_keys() -> YubiKeyResult<Vec<u8>> {
         let mut yubikey = Yubi::auto_yk()?;
-
         yubikey.authenticate(MgmKey::default())?;
-
         Ok(piv::generate(&mut yubikey,
                          piv::SlotId::Authentication,
                      piv::AlgorithmId::EccP256,
-                     PinPolicy::Default,
-                 TouchPolicy::Default)
+                     PinPolicy::Always,
+                 TouchPolicy::Never)
             ?.public_key())
     }
 
-    //https://docs.rs/yubikey/0.5.0/yubikey/piv/fn.sign_data.html -> to verify
     pub fn sign(bytes: &[u8]) -> YubiKeyResult<Buffer> {
         let mut yubikey = Yubi::auto_yk()?;
-        //let raw: &[u8] = &[];
-
-        yubikey.authenticate(MgmKey::default())?;
-
-        //let data = "Hello World!".as_bytes();
+        //yubikey.authenticate(MgmKey::default())?;
         Ok(piv::sign_data(&mut yubikey,
                        bytes,
                        piv::AlgorithmId::EccP256,

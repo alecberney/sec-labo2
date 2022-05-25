@@ -6,6 +6,8 @@ const SMTP_PASS: &str = "dhzksgixhpdmjrce";
 const SMTP_SERV: &str = "smtp.gmail.com";
 const MAIL_FROM: &str = "AlecBerney <alecberney@gmail.com>";
 
+// TODO: use env file
+
 pub fn send_mail(dst: &str, subject: &str, message: &str) -> Result<(), String> {
     let email = Message::builder()
         .from(MAIL_FROM.parse().unwrap())

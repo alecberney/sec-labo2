@@ -1,5 +1,6 @@
 use serde::{Serialize, Deserialize};
 use std::error::Error;
+use p256::ecdsa::{VerifyingKey, signature::Verifier, signature};
 
 use communication_tools::data_structures::*;
 use communication_tools::messages::*;
@@ -8,7 +9,7 @@ use input_validation::{email_validation::validate_email, password_validation::va
 
 use crate::connection::Connection;
 use crate::database::Database;
-use crate::authentication_tools::{hash_password, send_token_email, validate_email_uuid};
+use crate::authentication_tools::{hash_password, send_token_email, validate_email_uuid, validate_public_key};
 
 /// `Authenticate` enum is used to perform:
 /// -   Authentication
@@ -37,13 +38,16 @@ impl Authenticate {
         let register_data:RegisterData = connection.receive()?;
         let mut error_message = "";
 
-        // TODO: verify public yubikey if possible
         if !validate_email(&register_data.email) {
             error_message = INVALID_EMAIL;
         }
 
         if !validate_password(&register_data.password) {
             error_message = INVALID_PASSWORD;
+        }
+
+        if !validate_public_key(&register_data.public_yubikey) {
+            error_message = INVALID_PUBLIC_KEY;
         }
 
         if error_message != "" {
@@ -77,6 +81,7 @@ impl Authenticate {
         let (salt, hash_password) = hash_password(&register_data.password);
 
         // Register in db
+        // 2 FA is by default as false
         let user = User {
             email: register_data.email,
             salt,
@@ -84,8 +89,8 @@ impl Authenticate {
             public_yubikey: register_data.public_yubikey,
             two_fa: false,
         };
-        Database::insert(&user)?;
 
+        Database::insert(&user)?;
         Ok(Some(user))
     }
 
@@ -104,7 +109,9 @@ impl Authenticate {
         let mut valid_user = false;
 
         // We always do all the process of checking even if there is no user
-        // because we always want the same time of reponse
+        // because we always want the same time of response
+        // faire dans tous les cas le hashmap même si user inconnu
+        // le secret c'est le mdp hashé parce que clé dérivée // argon 2
 
         if validate_email(&login_data.email) {
             match Database::get(&login_data.email)? {
@@ -139,21 +146,50 @@ impl Authenticate {
         let response_data :ResponseData = connection.receive()?;
 
         if response_data.response != response || !valid_user {
-            connection.send(&ServerResponse{
+            connection.send(&ServerResponseTwoFA{
                 message: AUTH_FAIL.to_string(),
-                success: false
+                success: false,
+                two_fa: false
             })?;
-            return Ok(None)
+            return Ok(None);
         }
 
-        // TODO 2fa
-        
-        Ok(Some(user))
+        // Send if auth is success or still need a 2FA
+        if !user.two_fa {
+            connection.send(&ServerResponseTwoFA{
+                message: AUTH_SUCCESS.to_string(),
+                success: true,
+                two_fa: false
+            })?;
+            return Ok(Some(user));
+        } else {
+            connection.send(&ServerResponseTwoFA{
+                message: AUTH_TWO_FA.to_string(),
+                success: true,
+                two_fa: true
+            })?;
+        }
 
-        // 2fa
-        // https://docs.rs/ecdsa/0.13.4/ecdsa/index.html
-        // https://docs.rs/yubikey/0.5.0/yubikey/piv/index.html
-        // https://docs.yubico.com/software/yubikey/tools/ykman/Using_the_ykman_CLI.html#windows
+        // Second factor authentification
+        // We don't send a new challenge because we use same challenge than before
+        let two_fa_data :SecondFactorData = connection.receive()?;
+
+        let hashed_challenge = hash_sha256(&challenge);
+        let verifying_key = VerifyingKey::from_sec1_bytes(&user.public_yubikey)?;
+        let signature = signature::Signature::from_bytes(&two_fa_data.response)?;
+        let result_two_fa = verifying_key.verify(&hashed_challenge, &signature).is_ok();
+
+        connection.send(&ServerResponseTwoFA {
+            message: AUTH_TWO_FA.to_string(),
+            success: result_two_fa,
+            two_fa: true
+        })?;
+
+        if result_two_fa {
+            Ok(None)
+        } else {
+            Ok(Some(user))
+        }
     }
 
     fn reset_password(connection: &mut Connection) -> Result<Option<User>, Box<dyn Error>> {
@@ -168,6 +204,8 @@ impl Authenticate {
                 valid_email = true;
             }
         }
+
+        // TODO: 2FA
 
         if valid_email {
             connection.send(&ServerResponse{
@@ -202,6 +240,7 @@ impl Authenticate {
                 message: String::from(INVALID_PASSWORD),
                 success: false,
             })?;
+            Err(INVALID_PASSWORD.into())
         } else {
             // Update in db
             let (salt, hash_password) = hash_password(&reset_step3_data.password);
@@ -210,12 +249,11 @@ impl Authenticate {
                     user_db.hash_password = hash_password;
                     user_db.salt = salt;
                     Database::insert(&user_db)?;
+                    Ok(Some(user_db))
                 },
                 None => return Err(INVALID_EMAIL.into()),
             }
         }
-
-        Ok(None)
     }
 }
 
