@@ -1,15 +1,11 @@
 use lazy_static::lazy_static;
 use regex::Regex;
 
-// Start with maj, continue with alphanumeric, length 8 min
-//static REGEX_PASSWORD: &str = r"(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}";
-//static REGEX_PASSWORD: &str = r"(([A-Z])|([a-z]+)|([0-9]+)|([#?!@$ %^&*-]+){8,}";
-
 static REGEX_PASSWORD_UPPER_CASE: &str = r"[[:upper:]]";
 static REGEX_PASSWORD_LOWER_CASE: &str = r"[[:lower:]]";
 static REGEX_PASSWORD_DIGIT: &str = r"\d";
 static REGEX_PASSWORD_SPECIAL_CHAR: &str = r"[#?!@$ %^&*-]";
-static REGEX_PASSWORD_GLOBAL: &str = r".{8,}";
+static REGEX_PASSWORD_GLOBAL: &str = r".{8,64}";
 
 // TODO
 /*Allow all possible characters (even space, Unicode). Very

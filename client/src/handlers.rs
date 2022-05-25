@@ -1,10 +1,9 @@
 use read_input::prelude::*;
-use communication_tools::messages::{INVALID_EMAIL,
-                                    INVALID_PASSWORD,
-                                    INVALID_UUID};
+use communication_tools::messages::{INVALID_EMAIL, INVALID_PASSWORD, INVALID_PIN, INVALID_UUID};
 use input_validation::{email_validation::validate_email,
                        password_validation::validate_password,
-                       uuid_validation::validate_uuid};
+                       uuid_validation::validate_uuid,
+                       pin_validation::validate_pin};
 
 pub fn ask_email() -> String {
     loop {
@@ -33,5 +32,15 @@ pub fn ask_uuid() -> String {
             return uuid_input;
         }
         println!("{}", INVALID_UUID.to_string());
+    }
+}
+
+pub fn ask_pin() -> String {
+    loop {
+        let pin_input = input::<String>().msg("- PIN: ").get();
+        if validate_pin(&pin_input) {
+            return pin_input;
+        }
+        println!("{}", INVALID_PIN.to_string());
     }
 }

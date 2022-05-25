@@ -1,6 +1,7 @@
 use serde::{Serialize, Deserialize};
 use std::error::Error;
-use p256::ecdsa::{VerifyingKey, signature::Verifier, signature};
+use p256::ecdsa::signature::Verifier;
+use p256::EncodedPoint;
 
 use communication_tools::data_structures::*;
 use communication_tools::messages::*;
@@ -82,6 +83,7 @@ impl Authenticate {
 
         // Register in db
         // 2 FA is by default as false
+        // TODO: verify if account exists
         let user = User {
             email: register_data.email,
             salt,
@@ -174,10 +176,19 @@ impl Authenticate {
         // We don't send a new challenge because we use same challenge than before
         let two_fa_data :SecondFactorData = connection.receive()?;
 
-        let hashed_challenge = hash_sha256(&challenge);
-        let verifying_key = VerifyingKey::from_sec1_bytes(&user.public_yubikey)?;
-        let signature = signature::Signature::from_bytes(&two_fa_data.response)?;
-        let result_two_fa = verifying_key.verify(&hashed_challenge, &signature).is_ok();
+        let encoded_point: EncodedPoint = match EncodedPoint::from_bytes(&user.public_yubikey){
+            Ok(encoded_point) => encoded_point,
+            Err(_) => {
+                return Err(INVALID_PUBLIC_KEY.into());
+            },
+        };
+
+        let verifying_key = p256::ecdsa::VerifyingKey::from_encoded_point(&encoded_point)?;
+        let signature = p256::ecdsa::Signature::from_der(&two_fa_data.response)?;
+        let result_two_fa = match verifying_key.verify(&challenge, &signature) {
+            Ok(_) => true,
+            Err(_) => false,
+        };
 
         connection.send(&ServerResponseTwoFA {
             message: AUTH_TWO_FA.to_string(),

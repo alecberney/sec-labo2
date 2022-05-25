@@ -23,6 +23,21 @@ impl Action {
     fn switch_2fa(user: &mut User) -> Result<bool, Box<dyn Error>> {
         user.two_fa = !user.two_fa;
         Database::insert(&user)?;
+        // TODO inform client
         Ok(true) // TODO: perhaps change to user.two_fa
+
+        /*
+        let auth = Authenticate::authenticate(connection, true)?;
+        if auth.is_some() {
+            user.double_factor = !user.double_factor;
+            Database::insert(&user)?;
+            if user.double_factor == true{
+                connection.send(&StatusCode::DoubleAuthActiveted)?;
+            }else{
+                connection.send(&StatusCode::DoubleAuthDeactiveted)?;
+            }
+        }
+        Ok(true)
+         */
     }
 }

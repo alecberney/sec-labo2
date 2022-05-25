@@ -31,5 +31,23 @@ impl Action {
 
     fn switch_2fa() -> Result<bool, Box<dyn Error>> {
         Ok(true) // TODO
+        /*
+         let auth = Authenticate::authenticate(connection, true);
+        if auth.is_ok(){
+            // switch printing to see if MFA has been deactived or actived
+            match connection.receive()? {
+                StatusCode::DoubleAuthActiveted => {
+                    println!("The double authentification has been actived");
+                },
+                StatusCode::DoubleAuthDeactiveted => {
+                    println!("The double authentification has been deactived");
+                },
+                _ => return Err("Unknown error")?,
+            }
+        }else{
+            println!("You failed the authentification")
+        }
+        Ok(true)
+         */
     }
 }

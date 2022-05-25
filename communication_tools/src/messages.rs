@@ -1,4 +1,3 @@
-
 // Errors
 #[warn(dead_code)]
 pub static INVALID_EMAIL: &str = "Invalid email";
@@ -9,6 +8,8 @@ pub static INVALID_PASSWORD: &str = "Invalid password: must contain at least 1 u
 pub static INVALID_PUBLIC_KEY: &str = "Invalid public key";
 #[warn(dead_code)]
 pub static INVALID_UUID: &str = "Invalid uuid: must have format 00000000-0000-0000-0000-000000000000";
+#[warn(dead_code)]
+pub static INVALID_PIN: &str = "Invalid pin: must contains at least 6 and maximum 8 characters";
 #[warn(dead_code)]
 pub static BAD_UUID: &str = "Bad uuid";
 #[warn(dead_code)]

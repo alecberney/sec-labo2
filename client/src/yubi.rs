@@ -2,7 +2,7 @@ use std::io;
 use std::io::Read;
 use yubikey::{Context, YubiKey, piv, PinPolicy, TouchPolicy, MgmKey, Buffer};
 use x509::SubjectPublicKeyInfo;
-
+use crate::handlers::ask_pin;
 
 type YubiKeyResult<T> = yubikey::Result<T>;
 
@@ -35,6 +35,7 @@ impl Yubi {
 
     pub fn sign(bytes: &[u8]) -> YubiKeyResult<Buffer> {
         let mut yubikey = Yubi::auto_yk()?;
+        yubikey.verify_pin(ask_pin().as_bytes())?;
         //yubikey.authenticate(MgmKey::default())?;
         Ok(piv::sign_data(&mut yubikey,
                        bytes,

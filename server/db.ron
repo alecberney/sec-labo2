@@ -71,7 +71,7 @@
                 98,
                 153,
             ],
-            two_fa: false,
+            two_fa: true,
         ),
     },
 )
