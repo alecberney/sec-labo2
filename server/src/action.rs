@@ -15,15 +15,16 @@ pub enum Action {
 impl Action {
     pub fn perform(user: &mut User, connection: &mut Connection) -> Result<bool, Box<dyn Error>> {
         match connection.receive()? {
-            Action::Switch2FA => Action::switch_2fa(user),
+            Action::Switch2FA => Action::switch_2fa(user, connection),
             Action::Logout => Ok(false)
         }
     }
 
-    fn switch_2fa(user: &mut User) -> Result<bool, Box<dyn Error>> {
+    fn switch_2fa(user: &mut User, connection: &mut Connection) -> Result<bool, Box<dyn Error>> {
         user.two_fa = !user.two_fa;
         Database::insert(&user)?;
         // TODO inform client
+        //connection.send()
         Ok(true) // TODO: perhaps change to user.two_fa
 
         /*

@@ -1,11 +1,13 @@
 use uuid::Uuid;
 use std::error::Error;
 use p256::ecdsa::VerifyingKey;
+use p256::ecdsa::signature::Verifier;
+use p256::EncodedPoint;
 
 use app_tools::security::crypto::*;
 use app_tools::communication::data::ServerResponse;
 use app_tools::input_validation::uuid::validate_uuid;
-use app_tools::communication::messages::BAD_UUID;
+use app_tools::communication::messages::{BAD_UUID, INVALID_PUBLIC_KEY};
 
 
 use crate::connection::Connection;
@@ -54,4 +56,19 @@ pub fn validate_public_key(public_key: &Vec<u8>) -> bool {
         Ok(_) => true,
         Err(_) => false
     }
+}
+
+pub fn verify_challenge_yubikey(public_yubikey: &Vec<u8>, challenge: &[u8], response: &[u8]) -> Result<bool, Box<dyn Error>> {
+    let encoded_point: EncodedPoint = match EncodedPoint::from_bytes(public_yubikey){
+        Ok(encoded_point) => encoded_point,
+        Err(_) => {
+            return Err(INVALID_PUBLIC_KEY.into());
+        },
+    };
+    let verifying_key = p256::ecdsa::VerifyingKey::from_encoded_point(&encoded_point)?;
+    let signature = p256::ecdsa::Signature::from_der(response)?;
+    return match verifying_key.verify(challenge, &signature) {
+        Ok(_) => Ok(true),
+        Err(_) => Ok(false),
+    };
 }

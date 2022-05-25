@@ -8,21 +8,16 @@ pub struct RegisterData {
     pub public_yubikey: Vec<u8>,
 }
 
+// Challenge - Response data
 #[derive(Serialize, Deserialize, Clone, Debug)]
-pub struct EmailConfirmationData {
-    pub uuid: String,
-}
-
-// Login
-#[derive(Serialize, Deserialize, Clone, Debug)]
-pub struct LoginData {
-    pub email: String,
+pub struct ChallengeWithSaltData {
+    pub challenge: [u8; 16],
+    pub salt: [u8; 16],
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct ChallengeData {
     pub challenge: [u8; 16],
-    pub salt: [u8; 16],
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
@@ -30,28 +25,23 @@ pub struct ResponseData {
     pub response: Vec<u8>,
 }
 
+// Specific datas used in different actions
 #[derive(Serialize, Deserialize, Clone, Debug)]
-pub struct SecondFactorData {
-    pub response: Vec<u8>,
-}
-
-// Reset password
-#[derive(Serialize, Deserialize, Clone, Debug)]
-pub struct ResetPasswordStep1Data {
+pub struct EmailData {
     pub email: String,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
-pub struct ResetPasswordStep2Data {
-    pub uuid: String,
-}
-
-#[derive(Serialize, Deserialize, Clone, Debug)]
-pub struct ResetPasswordStep3Data {
+pub struct PasswordData {
     pub password: String,
 }
 
-// Other
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct UUIDData {
+    pub uuid: String,
+}
+
+// Server responses
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct ServerResponse {
     pub message: String,
@@ -63,4 +53,10 @@ pub struct ServerResponseTwoFA {
     pub message: String,
     pub success: bool,
     pub two_fa: bool,
+}
+
+// Two factor activation / de-activation
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct ChangeTwoFA {
+    pub two_fa_status: bool,
 }

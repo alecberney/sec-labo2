@@ -1,7 +1,5 @@
 use serde::{Serialize, Deserialize};
 use std::error::Error;
-use p256::ecdsa::signature::Verifier;
-use p256::EncodedPoint;
 
 use app_tools::security::crypto::{generate_random_16_bytes, hashmac_sha256};
 use app_tools::communication::data::*;
@@ -10,7 +8,11 @@ use app_tools::input_validation::{email::validate_email, password::validate_pass
 
 use crate::connection::Connection;
 use crate::database::Database;
-use crate::authentication_tools::{hash_password, send_token_email, validate_email_uuid, validate_public_key};
+use crate::authentication_tools::{hash_password,
+                                  send_token_email,
+                                  validate_email_uuid,
+                                  validate_public_key,
+                                  verify_challenge_yubikey};
 
 /// `Authenticate` enum is used to perform:
 /// -   Authentication
@@ -51,6 +53,11 @@ impl Authenticate {
             error_message = INVALID_PUBLIC_KEY;
         }
 
+        // Verify if account exists
+        if Database::get(&register_data.email)?.is_some() {
+            error_message = ACCOUNT_EXISTING;
+        }
+
         if error_message != "" {
             connection.send(&ServerResponse{
                 message: String::from(error_message),
@@ -70,7 +77,7 @@ impl Authenticate {
                               "Here is the validation token")?;
 
         // Wait for email token
-        let confirmation_data :EmailConfirmationData = connection.receive()?;
+        let confirmation_data :UUIDData = connection.receive()?;
 
         // Send result message
         validate_email_uuid(connection,
@@ -83,7 +90,6 @@ impl Authenticate {
 
         // Register in db
         // 2 FA is by default as false
-        // TODO: verify if account exists
         let user = User {
             email: register_data.email,
             salt,
@@ -97,7 +103,7 @@ impl Authenticate {
     }
 
     fn authenticate(connection: &mut Connection) -> Result<Option<User>, Box<dyn Error>> {
-        let login_data :LoginData = connection.receive()?;
+        let email_data :EmailData = connection.receive()?;
 
         // Default user
         let mut user = User {
@@ -112,11 +118,8 @@ impl Authenticate {
 
         // We always do all the process of checking even if there is no user
         // because we always want the same time of response
-        // faire dans tous les cas le hashmap même si user inconnu
-        // le secret c'est le mdp hashé parce que clé dérivée // argon 2
-
-        if validate_email(&login_data.email) {
-            match Database::get(&login_data.email)? {
+        if validate_email(&email_data.email) {
+            match Database::get(&email_data.email)? {
                 Some(user_found) => {
                     valid_user = true;
                     user_salt = user_found.salt;
@@ -131,7 +134,7 @@ impl Authenticate {
         generate_random_16_bytes(&mut challenge);
 
         // Sending challenge
-        connection.send(&ChallengeData{
+        connection.send(&ChallengeWithSaltData {
             challenge,
             salt: user_salt,
         })?;
@@ -174,54 +177,52 @@ impl Authenticate {
 
         // Second factor authentification
         // We don't send a new challenge because we use same challenge than before
-        let two_fa_data :SecondFactorData = connection.receive()?;
-
-        let encoded_point: EncodedPoint = match EncodedPoint::from_bytes(&user.public_yubikey){
-            Ok(encoded_point) => encoded_point,
-            Err(_) => {
-                return Err(INVALID_PUBLIC_KEY.into());
-            },
-        };
-
-        let verifying_key = p256::ecdsa::VerifyingKey::from_encoded_point(&encoded_point)?;
-        let signature = p256::ecdsa::Signature::from_der(&two_fa_data.response)?;
-        let result_two_fa = match verifying_key.verify(&challenge, &signature) {
-            Ok(_) => true,
-            Err(_) => false,
-        };
-
-        connection.send(&ServerResponseTwoFA {
-            message: AUTH_TWO_FA.to_string(),
-            success: result_two_fa,
-            two_fa: true
-        })?;
-
-        if result_two_fa {
-            Ok(None)
-        } else {
+        let two_fa_response :ResponseData = connection.receive()?;
+        if verify_challenge_yubikey(&user.public_yubikey, &challenge, &two_fa_response.response)? {
+            connection.send(&ServerResponse {
+                message: AUTH_SUCCESS.to_string(),
+                success: true,
+            })?;
             Ok(Some(user))
+        } else {
+            connection.send(&ServerResponse {
+                message: WRONG_KEY.to_string(),
+                success: false,
+            })?;
+            Ok(None)
         }
     }
 
     fn reset_password(connection: &mut Connection) -> Result<Option<User>, Box<dyn Error>> {
         // Validate email
-        let reset_step1_data :ResetPasswordStep1Data = connection.receive()?;
+        let email_data:EmailData = connection.receive()?;
         let mut valid_email = false;
         let mut reset_user = None;
 
-        if validate_email(&reset_step1_data.email) {
-            reset_user = Database::get(&reset_step1_data.email)?;
-            if let Some(_) = reset_user {
+        if validate_email(&email_data.email) {
+            reset_user = Database::get(&email_data.email)?;
+            if reset_user.is_some() {
                 valid_email = true;
             }
         }
 
-        // TODO: 2FA
+        let mut challenge: [u8; 16];
 
         if valid_email {
+            // Verify that is the good user with 2FA
+            // Creating challenge
+            challenge = [0; 16];
+            generate_random_16_bytes(&mut challenge);
+
+            // Confirm email validation
             connection.send(&ServerResponse{
-                message: String::from(EMAIL_SENT),
+                message: String::from(VALID_EMAIL),
                 success: true,
+            })?;
+
+            // Sending challenge
+            connection.send(&ChallengeData {
+                challenge,
             })?;
         } else {
             connection.send(&ServerResponse{
@@ -231,22 +232,37 @@ impl Authenticate {
             return Err(INVALID_EMAIL.into());
         }
 
+        // Receive response
+        let response_data: ResponseData = connection.receive()?;
+        if verify_challenge_yubikey(&reset_user.as_ref().unwrap().public_yubikey, &challenge, &response_data.response)? {
+            connection.send(&ServerResponse{
+                message: String::from(EMAIL_SENT),
+                success: true,
+            })?;
+        } else {
+            connection.send(&ServerResponse{
+                message: String::from(WRONG_KEY),
+                success: false,
+            })?;
+            return Err(WRONG_KEY.into());
+        }
+
         // Send reset email
-        let uuid = send_token_email(&reset_step1_data.email,
+        let uuid = send_token_email(&email_data.email,
                                     "Reset password mail",
                                     "Here is the reset password token : ")?;
 
-        let reset_step2_data :ResetPasswordStep2Data = connection.receive()?;
+        let uuid_data :UUIDData = connection.receive()?;
 
         // Send result message
         validate_email_uuid(connection,
                             &uuid,
-                            &reset_step2_data.uuid,
+                            &uuid_data.uuid,
                             CORRECT_UUID)?;
 
-        let reset_step3_data :ResetPasswordStep3Data = connection.receive()?;
+        let password_data :PasswordData = connection.receive()?;
 
-        if !validate_password(&reset_step3_data.password) {
+        if !validate_password(&password_data.password) {
             connection.send(&ServerResponse{
                 message: String::from(INVALID_PASSWORD),
                 success: false,
@@ -254,7 +270,7 @@ impl Authenticate {
             Err(INVALID_PASSWORD.into())
         } else {
             // Update in db
-            let (salt, hash_password) = hash_password(&reset_step3_data.password);
+            let (salt, hash_password) = hash_password(&password_data.password);
             match reset_user {
                 Some(mut user_db) => {
                     user_db.hash_password = hash_password;

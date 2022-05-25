@@ -31,8 +31,7 @@ impl Action {
 
     fn switch_2fa() -> Result<bool, Box<dyn Error>> {
         Ok(true) // TODO
-        /*
-         let auth = Authenticate::authenticate(connection, true);
+        /*let auth = Authenticate::authenticate(connection, true);
         if auth.is_ok(){
             // switch printing to see if MFA has been deactived or actived
             match connection.receive()? {
@@ -47,7 +46,6 @@ impl Action {
         }else{
             println!("You failed the authentification")
         }
-        Ok(true)
-         */
+        Ok(true)*/
     }
 }
