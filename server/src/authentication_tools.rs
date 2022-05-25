@@ -23,7 +23,7 @@ pub fn generate_string_uuid() -> String {
     uuid.as_hyphenated().to_string()
 }
 
-pub fn send_token_email(dst: &str, subject: &str, token_message: &str) -> Result<String, String> {
+pub fn send_token_email(dst: &str, subject: &str, token_message: &str) -> Result<String, Box<dyn Error>> {
     let uuid = generate_string_uuid();
     let message = format!("{} : {}", token_message, uuid);
     send_mail(dst, subject, &message)?;

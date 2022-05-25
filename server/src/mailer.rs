@@ -1,30 +1,55 @@
+extern crate envfile;
+
 use lettre::transport::smtp::authentication::Credentials;
 use lettre::{Message, SmtpTransport, Transport};
+use envfile::EnvFile;
+use std::path::Path;
+use std::error::Error;
 
-const SMTP_USER: &str = "alecberney";
-const SMTP_PASS: &str = "dhzksgixhpdmjrce";
-const SMTP_SERV: &str = "smtp.gmail.com";
-const MAIL_FROM: &str = "AlecBerney <alecberney@gmail.com>";
+fn read_env_file() -> Result<(String, String, String, String), Box<dyn Error>> {
+    let envfile = EnvFile::new(&Path::new("./.env"))?;
 
-// TODO: use env file
+    let mut smtp_user= String::from("");
+    let mut smtp_pass= String::from("");
+    let mut smtp_serv= String::from("");
+    let mut mail_from= String::from("");
 
-pub fn send_mail(dst: &str, subject: &str, message: &str) -> Result<(), String> {
+    for (key, value) in envfile.store {
+        match &*key {
+            "SMTP_USER" => smtp_user = format!("{}", value),
+            "SMTP_PASS" => smtp_pass = format!("{}", value),
+            "SMTP_SERV" => smtp_serv = format!("{}", value),
+            "MAIL_FROM" => mail_from = format!("{}", value),
+            _ => {}
+        }
+    }
+
+    if smtp_user == "" || smtp_pass == "" || smtp_serv == "" || mail_from == "" {
+        Err("INVALID ENV FILE".into())
+    } else {
+        Ok((smtp_user, smtp_pass, smtp_serv, mail_from))
+    }
+}
+
+pub fn send_mail(dst: &str, subject: &str, message: &str) -> Result<(), Box<dyn Error>> {
+    let (smtp_user, smtp_pass, smtp_serv, mail_from) = read_env_file()?;
+
     let email = Message::builder()
-        .from(MAIL_FROM.parse().unwrap())
-        .reply_to(MAIL_FROM.parse().unwrap())
+        .from(mail_from.parse().unwrap())
+        .reply_to(mail_from.parse().unwrap())
         .to(dst.parse().unwrap())
         .subject(subject.to_string())
         .body(message.to_string())
         .unwrap();
-    let creds = Credentials::new(SMTP_USER.to_string(), SMTP_PASS.to_string());
+    let creds = Credentials::new(smtp_user.to_string(), smtp_pass.to_string());
 
-    let mailer = SmtpTransport::relay(SMTP_SERV)
+    let mailer = SmtpTransport::relay(&smtp_serv)
         .unwrap()
         .credentials(creds)
         .build();
 
     match mailer.send(&email) {
         Ok(_) => Ok(()),
-        Err(e) => Err(format!("Could not send email: {:?}", e)),
+        Err(e) => Err(format!("Could not send email: {:?}", e).into()),
     }
 }
