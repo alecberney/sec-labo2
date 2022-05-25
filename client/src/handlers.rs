@@ -1,9 +1,12 @@
 use read_input::prelude::*;
-use communication_tools::messages::{INVALID_EMAIL, INVALID_PASSWORD, INVALID_PIN, INVALID_UUID};
-use input_validation::{email_validation::validate_email,
-                       password_validation::validate_password,
-                       uuid_validation::validate_uuid,
-                       pin_validation::validate_pin};
+use app_tools::communication::messages::{INVALID_EMAIL,
+                                         INVALID_PASSWORD,
+                                         INVALID_PIN,
+                                         INVALID_UUID};
+use app_tools::input_validation::{email::validate_email,
+                       password::validate_password,
+                       uuid::validate_uuid,
+                       pin::validate_pin};
 
 pub fn ask_email() -> String {
     loop {

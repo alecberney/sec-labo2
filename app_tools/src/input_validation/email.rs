@@ -18,6 +18,9 @@ mod tests {
         let result = 2 + 2;
         assert_eq!(result, 4);
     }
+
+    // TODO
+
     // Testing flag to bind test function with parametrized test cases.
     // Here, the fields input and expected are bound in the specified order, and then two sample test cases are provided.
     // TODO: provide more test cases to ensure that mail regex works properly, and to highlight its limits

@@ -14,6 +14,8 @@ pub fn validate_pin(pin: &str) -> bool {
 mod tests {
     use super::*;
 
+    // TODO
+
     #[test]
     fn validate_pin_length() {
         // Pass

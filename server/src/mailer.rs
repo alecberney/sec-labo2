@@ -6,6 +6,11 @@ use envfile::EnvFile;
 use std::path::Path;
 use std::error::Error;
 
+// To use email, create a .env file at the root and add these values to it:
+//SMTP_USER=x
+//SMTP_PASS=x
+//SMTP_SERV=x
+//MAIL_FROM=x
 fn read_env_file() -> Result<(String, String, String, String), Box<dyn Error>> {
     let envfile = EnvFile::new(&Path::new("./.env"))?;
 

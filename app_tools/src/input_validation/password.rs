@@ -23,10 +23,10 @@ pub fn validate_password(password_input: &str) -> bool {
         static ref RE_GLOBAL: Regex = Regex::new(&format!("^{}$", REGEX_PASSWORD_GLOBAL)).unwrap();
     }
     RE_UPPER.is_match(password_input) &&
-    RE_LOWER.is_match(password_input) &&
-    RE_DIGIT.is_match(password_input) &&
-    RE_SPECIAL.is_match(password_input) &&
-    RE_GLOBAL.is_match(password_input)
+        RE_LOWER.is_match(password_input) &&
+        RE_DIGIT.is_match(password_input) &&
+        RE_SPECIAL.is_match(password_input) &&
+        RE_GLOBAL.is_match(password_input)
 }
 
 #[cfg(test)]
@@ -36,4 +36,6 @@ mod tests {
         let result = 2 + 2;
         assert_eq!(result, 4);
     }
+
+    // TODO
 }

@@ -3,8 +3,8 @@ use std::error::Error;
 use strum::IntoEnumIterator;
 use strum_macros::{EnumString, EnumIter};
 
-use communication_tools::data_structures::*;
-use hashing_tools::hash_helpers::{hash_argon2, hash_sha256, hashmac_sha256};
+use app_tools::communication::data::*;
+use app_tools::security::crypto::{hash_argon2, hash_sha256, hashmac_sha256};
 
 use crate::connection::Connection;
 use crate::handlers::*;
@@ -48,15 +48,11 @@ impl Authenticate {
     fn register(connection: &mut Connection) -> Result<(), Box<dyn Error>> {
         println!("<< Please register yourself >>");
 
-        let email = ask_email();
-        let password_input = ask_password();
-        let public_yubikey = Yubi::generate_keys()?;
-
         // Send datas to server
         connection.send(&RegisterData {
-            email,
-            password: password_input,
-            public_yubikey,
+            email: ask_email(),
+            password: ask_password(),
+            public_yubikey: Yubi::generate_keys()?,
         })?;
 
         // Handle server response

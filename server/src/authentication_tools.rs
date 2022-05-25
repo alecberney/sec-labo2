@@ -2,10 +2,10 @@ use uuid::Uuid;
 use std::error::Error;
 use p256::ecdsa::VerifyingKey;
 
-use hashing_tools::hash_helpers::*;
-use communication_tools::data_structures::ServerResponse;
-use input_validation::uuid_validation::validate_uuid;
-use communication_tools::messages::BAD_UUID;
+use app_tools::security::crypto::*;
+use app_tools::communication::data::ServerResponse;
+use app_tools::input_validation::uuid::validate_uuid;
+use app_tools::communication::messages::BAD_UUID;
 
 
 use crate::connection::Connection;

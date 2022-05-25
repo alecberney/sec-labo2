@@ -36,7 +36,6 @@ impl Yubi {
     pub fn sign(bytes: &[u8]) -> YubiKeyResult<Buffer> {
         let mut yubikey = Yubi::auto_yk()?;
         yubikey.verify_pin(ask_pin().as_bytes())?;
-        //yubikey.authenticate(MgmKey::default())?;
         Ok(piv::sign_data(&mut yubikey,
                        bytes,
                        piv::AlgorithmId::EccP256,

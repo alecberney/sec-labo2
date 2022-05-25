@@ -3,10 +3,10 @@ use std::error::Error;
 use p256::ecdsa::signature::Verifier;
 use p256::EncodedPoint;
 
-use communication_tools::data_structures::*;
-use communication_tools::messages::*;
-use hashing_tools::hash_helpers::*;
-use input_validation::{email_validation::validate_email, password_validation::validate_password};
+use app_tools::security::crypto::{generate_random_16_bytes, hashmac_sha256};
+use app_tools::communication::data::*;
+use app_tools::communication::messages::*;
+use app_tools::input_validation::{email::validate_email, password::validate_password};
 
 use crate::connection::Connection;
 use crate::database::Database;
@@ -36,7 +36,7 @@ impl Authenticate {
 
     fn register(connection: &mut Connection) -> Result<Option<User>, Box<dyn Error>> {
         // Validate data
-        let register_data:RegisterData = connection.receive()?;
+        let register_data :RegisterData = connection.receive()?;
         let mut error_message = "";
 
         if !validate_email(&register_data.email) {
