@@ -13,7 +13,7 @@ pub fn validate_uuid(uuid: &str) -> bool {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use super::validate_uuid;
 
     #[test]
     fn validate_uuid_format() {

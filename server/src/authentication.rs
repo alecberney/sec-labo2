@@ -250,7 +250,7 @@ impl Authenticate {
         // Send reset email
         let uuid = send_token_email(&email_data.email,
                                     "Reset password mail",
-                                    "Here is the reset password token : ")?;
+                                    "Here is the reset password token ")?;
 
         let uuid_data :UUIDData = connection.receive()?;
 
@@ -283,6 +283,9 @@ impl Authenticate {
         }
     }
 }
+
+// I could implement system of number of try to lock an account or not but it wasn't asked
+// so it is not implemented, but could easily be done with 2 more fields in BD (nb_tries and locked)
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct User {

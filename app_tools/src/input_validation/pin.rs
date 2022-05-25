@@ -12,23 +12,32 @@ pub fn validate_pin(pin: &str) -> bool {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-
-    // TODO
+    use super::validate_pin;
 
     #[test]
     fn validate_pin_length() {
         // Pass
-        assert!(validate_pin("0000000"));
+        assert!(validate_pin("0000000")); // 7
 
         // Fail
+        assert!(!validate_pin(""));
         assert!(!validate_pin("0"));
         assert!(!validate_pin("0000000000000000000000000000000"));
 
         // Corner cases
-        assert!(validate_pin("000000"));
-        assert!(validate_pin("00000000"));
-        assert!(validate_pin("00000"));
-        assert!(validate_pin("000000000"));
+        assert!(validate_pin("000000")); // 6
+        assert!(validate_pin("00000000")); // 8
+        assert!(!validate_pin("00000")); // 5
+        assert!(!validate_pin("000000000")); // 9
+    }
+
+    #[test]
+    fn validate_pin_characters() {
+        // Corner cases
+        assert!(validate_pin("0123456")); // num
+        assert!(validate_pin("abcdefg")); // lower case
+        assert!(validate_pin("ABCDEFG")); // upper case
+        assert!(validate_pin("$%/&£*+")); // special chars
+        assert!(validate_pin("._;!?<>")); // special chars
     }
 }

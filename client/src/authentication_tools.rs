@@ -8,6 +8,7 @@ pub fn generate_yubikey_signature(challenge: &[u8]) -> Result<Vec<u8>, Box<dyn E
     Ok(Yubi::sign(&hash_sha256(challenge))?.to_vec())
 }
 
+// TODO
 pub fn handle_server_response(connection: &mut Connection) -> Result<(), Box<dyn Error>> {
     let return_message: ServerResponse = connection.receive()?;
     if !return_message.success {

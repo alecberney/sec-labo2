@@ -7,13 +7,6 @@ static REGEX_PASSWORD_DIGIT: &str = r"\d";
 static REGEX_PASSWORD_SPECIAL_CHAR: &str = r"[#?!@$ %^&*-]";
 static REGEX_PASSWORD_GLOBAL: &str = r".{8,64}";
 
-// TODO
-/*Allow all possible characters (even space, Unicode). Very
-annoying otherwise.
-• Enforce a minimum length. 8 chars is the bare minimum.
-• Have a maximum length. Too long passwords can lead to a DoS !
-• Typical maximum length : 64 chars.*/
-
 pub fn validate_password(password_input: &str) -> bool {
     lazy_static! {
         static ref RE_UPPER: Regex = Regex::new(&format!("{}", REGEX_PASSWORD_UPPER_CASE)).unwrap();
@@ -31,11 +24,36 @@ pub fn validate_password(password_input: &str) -> bool {
 
 #[cfg(test)]
 mod tests {
+    use super::validate_password;
+
     #[test]
-    fn it_works() {
-        let result = 2 + 2;
-        assert_eq!(result, 4);
+    fn validate_password_length() {
+        // Pass
+        assert!(validate_password("Test123456789$"));
+
+        // Fail
+        assert!(!validate_password("Te1$"));
+        assert!(!validate_password("Teeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee\
+        eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeest1$")); // 100 chars
+
+        // Corner cases
+        assert!(validate_password("Test123$")); // 8 chars
+        assert!(validate_password("Teeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee\
+        eeeeeeeeeest1$")); // 64 chars
+        assert!(!validate_password("Test12$")); // 7 chars
+        assert!(!validate_password("Teeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee\
+        eeeeeeeeeeeest1$")); // 65 chars
     }
 
-    // TODO
+    #[test]
+    fn validate_password_characters() {
+        // Pass
+        assert!(validate_password("Test123456789$"));
+
+        // Fail & Corner cases
+        assert!(!validate_password("test123456789$")); // Without upper case
+        assert!(!validate_password("TEST123456789$")); // Without lower case
+        assert!(!validate_password("Testabcdefghi$")); // Without digit
+        assert!(!validate_password("Test1234567890")); // Without special char
+    }
 }

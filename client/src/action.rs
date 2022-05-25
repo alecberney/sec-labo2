@@ -1,5 +1,6 @@
 use serde::{Serialize, Deserialize};
 use std::error::Error;
+use app_tools::communication::data::ChangeTwoFA;
 use strum::IntoEnumIterator;
 use strum_macros::{EnumString, EnumIter};
 use crate::connection::Connection;
@@ -24,28 +25,20 @@ impl Action {
         connection.send(self)?;
 
         match self {
-            Action::Switch2FA => Action::switch_2fa(),
+            Action::Switch2FA => Action::switch_2fa(connection),
             Action::Logout => Ok(false)
         }
     }
 
-    fn switch_2fa() -> Result<bool, Box<dyn Error>> {
-        Ok(true) // TODO
-        /*let auth = Authenticate::authenticate(connection, true);
-        if auth.is_ok(){
-            // switch printing to see if MFA has been deactived or actived
-            match connection.receive()? {
-                StatusCode::DoubleAuthActiveted => {
-                    println!("The double authentification has been actived");
-                },
-                StatusCode::DoubleAuthDeactiveted => {
-                    println!("The double authentification has been deactived");
-                },
-                _ => return Err("Unknown error")?,
-            }
-        }else{
-            println!("You failed the authentification")
+    fn switch_2fa(connection: &mut Connection) -> Result<bool, Box<dyn Error>> {
+        let change_data :ChangeTwoFA = connection.receive()?;
+
+        if change_data.two_fa_status {
+            println!("Double authentification is now active");
+        } else {
+            println!("Double authentification is now deactivate");
         }
-        Ok(true)*/
+
+        Ok(true)
     }
 }

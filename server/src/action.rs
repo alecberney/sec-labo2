@@ -1,5 +1,6 @@
 use serde::{Serialize, Deserialize};
 use std::error::Error;
+use app_tools::communication::data::ChangeTwoFA;
 use crate::connection::Connection;
 use crate::authentication::User;
 use crate::database::Database;
@@ -21,24 +22,15 @@ impl Action {
     }
 
     fn switch_2fa(user: &mut User, connection: &mut Connection) -> Result<bool, Box<dyn Error>> {
+        // Update 2 FA status in BD
         user.two_fa = !user.two_fa;
         Database::insert(&user)?;
-        // TODO inform client
-        //connection.send()
-        Ok(true) // TODO: perhaps change to user.two_fa
 
-        /*
-        let auth = Authenticate::authenticate(connection, true)?;
-        if auth.is_some() {
-            user.double_factor = !user.double_factor;
-            Database::insert(&user)?;
-            if user.double_factor == true{
-                connection.send(&StatusCode::DoubleAuthActiveted)?;
-            }else{
-                connection.send(&StatusCode::DoubleAuthDeactiveted)?;
-            }
-        }
+        // Send new 2 FA status to client
+        connection.send(&ChangeTwoFA {
+            two_fa_status: user.two_fa
+        })?;
+
         Ok(true)
-         */
     }
 }
