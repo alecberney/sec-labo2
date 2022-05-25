@@ -56,22 +56,14 @@ impl Authenticate {
             public_yubikey: Yubi::generate_keys()?,
         })?;
 
-        // Handle server response
-        let return_message: ServerResponse = connection.receive()?;
-        if !return_message.success {
-            return Err(format!("{}", return_message.message).into());
-        }
+        handle_server_response(connection)?;
 
         // Send email uuid confirmation value
         connection.send(&UUIDData {
             uuid: ask_uuid(),
         })?;
 
-        // Handle server response
-        let return_message2: ServerResponse = connection.receive()?;
-        if !return_message2.success {
-            return Err(format!("{}", return_message2.message).into());
-        }
+        handle_server_response(connection)?;
 
         Ok(())
     }
@@ -117,11 +109,7 @@ impl Authenticate {
             response: generate_yubikey_signature(&challenge_data.challenge)?
         })?;
 
-        // Handle server response
-        let challenge_result :ServerResponse = connection.receive()?;
-        if !challenge_result.success {
-            return Err(format!("{}", challenge_result.message).into());
-        }
+        handle_server_response(connection)?;
 
         Ok(())
     }
@@ -134,11 +122,7 @@ impl Authenticate {
             email: ask_email(),
         })?;
 
-        // Handle server response
-        let mut server_message: ServerResponse = connection.receive()?;
-        if !server_message.success {
-            return Err(format!("{}", server_message.message).into());
-        }
+        handle_server_response(connection)?;
 
         // Get challenge and send response to it
         let challenge_data :ChallengeData = connection.receive()?;
@@ -146,22 +130,14 @@ impl Authenticate {
             response: generate_yubikey_signature(&challenge_data.challenge)?
         })?;
 
-        // Handle server response
-        server_message = connection.receive()?;
-        if !server_message.success {
-            return Err(format!("{}", server_message.message).into());
-        }
+        handle_server_response(connection)?;
 
         // Send email uuid confirmation value
         connection.send(&UUIDData {
             uuid: ask_uuid(),
         })?;
 
-        // Handle server response
-        server_message = connection.receive()?;
-        if !server_message.success {
-            return Err(format!("{}", server_message.message).into());
-        }
+        handle_server_response(connection)?;
 
         // Send new password
         connection.send(&PasswordData {
