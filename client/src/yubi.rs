@@ -24,6 +24,8 @@ impl Yubi {
 
     pub fn generate_keys() -> YubiKeyResult<Vec<u8>> {
         let mut yubikey = Yubi::auto_yk()?;
+        // I use default management key because implement an other is much harder
+        // and it wasn't necessary for this testing lab.
         yubikey.authenticate(MgmKey::default())?;
         Ok(piv::generate(&mut yubikey,
                          piv::SlotId::Authentication,

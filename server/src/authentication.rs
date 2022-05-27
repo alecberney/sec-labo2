@@ -58,6 +58,7 @@ impl Authenticate {
             error_message = ACCOUNT_EXISTING;
         }
 
+        // Send response
         if error_message != "" {
             connection.send(&ServerResponse{
                 message: String::from(error_message),
@@ -119,6 +120,7 @@ impl Authenticate {
         // We always do all the process of checking even if there is no user
         // because we always want the same time of response
         if validate_email(&email_data.email) {
+            // Get user in BD
             match Database::get(&email_data.email)? {
                 Some(user_found) => {
                     valid_user = true;
@@ -148,8 +150,8 @@ impl Authenticate {
             },
         }
 
+        // Send result response to challenge
         let response_data :ResponseData = connection.receive()?;
-
         if response_data.response != response || !valid_user {
             connection.send(&ServerResponseTwoFA{
                 message: AUTH_FAIL.to_string(),
@@ -200,6 +202,7 @@ impl Authenticate {
         let mut reset_user = None;
 
         if validate_email(&email_data.email) {
+            // Verify if account exists
             reset_user = Database::get(&email_data.email)?;
             if reset_user.is_some() {
                 valid_email = true;
