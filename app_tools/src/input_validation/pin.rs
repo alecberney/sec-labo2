@@ -1,7 +1,8 @@
 use lazy_static::lazy_static;
 use regex::Regex;
 
-static REGEX_PIN: &str = r".{6,8}";
+// Ref: https://developers.yubico.com/PIV/Introduction/Admin_access.html
+static REGEX_PIN: &str = r"[[:alnum:]]{6,8}";
 
 pub fn validate_pin(pin: &str) -> bool {
     lazy_static! {
@@ -33,11 +34,13 @@ mod tests {
 
     #[test]
     fn validate_pin_characters() {
-        // Corner cases
+        // Pass & Corner cases
         assert!(validate_pin("0123456")); // num
         assert!(validate_pin("abcdefg")); // lower case
         assert!(validate_pin("ABCDEFG")); // upper case
-        assert!(validate_pin("$%/&£*+")); // special chars
-        assert!(validate_pin("._;!?<>")); // special chars
+
+        // Fail & Corner cases
+        assert!(!validate_pin("$%/&£*+")); // special chars
+        assert!(!validate_pin("._;!?<>")); // special chars
     }
 }
